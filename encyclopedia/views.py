@@ -1,7 +1,7 @@
 from fileinput import filename
 from http.client import HTTPResponse
 from urllib import request
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import markdown
 import random
 
@@ -11,13 +11,14 @@ import encyclopedia
 
 def convert_md_to_html(title):
     content = util.get_entry(title)
-    converted = markdown.markdown(content)
+    # converted = markdown.markdown(content)
 
     if content == None:
         return None
     else:
-        #    return markdowner.convert(content)
-        return converted
+        return markdown.markdown(content)
+           # return markdowner.convert(content)
+        # return converted
 
 
 def index(request):
@@ -35,56 +36,26 @@ def entry(request, title):
     if html_content == None:
         return render(request, "encyclopedia/404.html")
     else:
-        return render(request, "encyclopedia/entry.html", {"title": title, "content": html_content})
+        return render(request, "encyclopedia/entry.html", {
+            "title": title,
+            "content": html_content
+        })
 
-#
-# def search(request):
-#     entry_search = request.GET['q']
-#
-#     if (util.get_entry(entry_search) is not None):
-#         html_content = convert_md_to_html(entry_search)
-#         return render(request, "encyclopedia/entry.html", {
-#             "title": entry_search,
-#             "content": html_content,
-#         })
-#     else:
-#         recommendation = []
-#         for entry in util.list_entries():
-#             if entry_search.lower() in entry.lower():
-#                 recommendation.append(entry)
-#         return render(request, "encyclopedia/search.html", {"recommendation": recommendation})
-#
-#
-# # def search(request ):
-# #    allEntries = util.list_entries()
-# # #    if request.method == "POST":
-# #    entry_search = request.GET['q']
-# #    html_content = convert_md_to_html(entry_search)
-#
-# #    if html_content is not None:
-# #         return render(request, "encyclopedia/entry.html",{
-# #             "title":entry_search,
-# #             "content":html_content
-# #         })
-# #    else:
-# #         allEntries = util.list_entries()
-#
-# #    recommendation = []
-# #    entry_search = request.GET['q']
-# # #    names = util.get_entry()
-#
-# #    for entry in allEntries:
-# #         if entry_search.lower() in entry.lower():
-# #                 recommendation.append(entry)
-# #                 return render(request, "encyclopedia/search.html",{
-# #                     "recommendation": recommendation
-# #                 })
-#
-# # else:
-# #     return render(request, "encyclopedia/error.html",{
-# #         "message":"No such entry exists now."
-# # })
-#
+
+def search(request):
+    entry_search = request.GET.get('q', '').strip()
+
+    if util.get_entry(entry_search) is not None:
+        content = convert_md_to_html(entry_search)
+        return render(request, "encyclopedia/entry.html", {
+            "title": entry_search,
+            "content": content,
+        })
+    else:
+        recommendation = [entry for entry in util.list_entries() if entry_search.lower() in entry.lower()]
+        return render(request, "encyclopedia/search.html", {"recommendation": recommendation})
+
+
 #
 # def new_page(request):
 #     if request.method == "GET":
