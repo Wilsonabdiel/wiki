@@ -67,21 +67,21 @@ def entry(request, title):
 #             "message": "Invalid request method."
 #         })
 
-#
-# def search(request):
-#     entry_search = request.GET.get('q', '').strip()
-#
-#     if util.get_entry(entry_search) is not None:
-#         content = convert_md_to_html(entry_search)
-#         return render(request, "encyclopedia/entry.html", {
-#             "title": entry_search,
-#             "content": content,
-#         })
-#     else:
-#         recommendation = [entry for entry in util.list_entries() if entry_search.lower() in entry.lower()]
-#         return render(request, "encyclopedia/search.html", {
-#             "recommendation": recommendation
-#         })
+
+def search(request):
+    entry_search = request.GET.get('q', '').strip()
+
+    if util.get_entry(entry_search) is not None:
+        content = convert_md_to_html(entry_search)
+        return render(request, "encyclopedia/entry.html", {
+            "title": entry_search,
+            "content": content,
+        })
+    else:
+        recommendation = [entry for entry in util.list_entries() if entry_search.lower() in entry.lower()]
+        return render(request, "encyclopedia/search.html", {
+            "recommendation": recommendation
+        })
 
 
 
@@ -129,7 +129,7 @@ def saveEdit(request):
 def random(request):
     allEntries = util.list_entries()
 
-    random_entry = random.choice(allEntries)
+    random_entry = random.choices(allEntries)
     html_content = convert_md_to_html(random_entry)
     return render(request, "encyclopedia/entry.html", {
         "title": random_entry,
